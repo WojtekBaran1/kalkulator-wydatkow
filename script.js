@@ -3,6 +3,7 @@ const expenseAmountInput = document.getElementById("amount");
 const expenseDateInput = document.getElementById("expenseDate");
 const list = document.getElementById("list");
 const sumEl = document.getElementById("sum");
+const monthSumEl = document.getElementById("monthSum");
 
 function getTodayDate() {
   return new Date().toISOString().split("T")[0];
@@ -85,9 +86,33 @@ function render() {
     list.appendChild(li);
 
     sum += expense.amount;
+
+    const monthTotal = calculateMonthSum();
+    monthSumEl.textContent = monthTotal.toFixed(2);
   });
 
   sumEl.textContent = sum.toFixed(2);
+}
+
+function calculateMonthSum() {
+  const selectedDate = getSelectedDate(); // np. 2026-03-30
+  const monthPrefix = selectedDate.slice(0, 7); // 2026-03
+
+  let total = 0;
+
+  for (let i = 0; i < localStorage.length; i++) {
+    const key = localStorage.key(i);
+
+    if (key.startsWith("expenses-") && key.includes(monthPrefix)) {
+      const data = JSON.parse(localStorage.getItem(key)) || [];
+
+      data.forEach(e => {
+        total += e.amount;
+      });
+    }
+  }
+
+  return total;
 }
 
 expenseDateInput.addEventListener("change", render);

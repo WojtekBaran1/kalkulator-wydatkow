@@ -240,6 +240,20 @@ input:focus {
   background: rgba(120, 81, 255, 0.24);
 }
 
+.month-summary {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 14px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  background: rgba(93, 228, 255, 0.08);
+  border: 1px solid rgba(93, 228, 255, 0.25);
+  color: #9feaff;
+  font-weight: bold;
+  box-shadow: 0 0 20px rgba(93, 228, 255, 0.15);
+}
+
 @media (max-width: 640px) {
   .card {
     padding: 22px;
