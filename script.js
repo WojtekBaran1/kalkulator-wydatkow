@@ -1,20 +1,28 @@
 const expenseNameInput = document.getElementById("name");
 const expenseAmountInput = document.getElementById("amount");
+const expenseDateInput = document.getElementById("expenseDate");
 const list = document.getElementById("list");
 const sumEl = document.getElementById("sum");
 
-function getTodayKey() {
-  const today = new Date().toISOString().split("T")[0];
-  return "expenses-" + today;
+function getTodayDate() {
+  return new Date().toISOString().split("T")[0];
+}
+
+function getSelectedDate() {
+  return expenseDateInput.value || getTodayDate();
+}
+
+function getStorageKey() {
+  return "expenses-" + getSelectedDate();
 }
 
 function getExpenses() {
-  const data = localStorage.getItem(getTodayKey());
+  const data = localStorage.getItem(getStorageKey());
   return data ? JSON.parse(data) : [];
 }
 
 function saveExpenses(expenses) {
-  localStorage.setItem(getTodayKey(), JSON.stringify(expenses));
+  localStorage.setItem(getStorageKey(), JSON.stringify(expenses));
 }
 
 function add() {
@@ -51,16 +59,28 @@ function render() {
   expenses.forEach((expense, index) => {
     const li = document.createElement("li");
 
-    const textSpan = document.createElement("span");
-    textSpan.textContent = `${expense.name} - ${expense.amount.toFixed(2)} zł`;
+    const textWrapper = document.createElement("div");
+    textWrapper.className = "expense-text";
+
+    const nameSpan = document.createElement("span");
+    nameSpan.className = "expense-name";
+    nameSpan.textContent = expense.name;
+
+    const amountSpan = document.createElement("span");
+    amountSpan.className = "expense-amount";
+    amountSpan.textContent = `${expense.amount.toFixed(2)} zł`;
+
+    textWrapper.appendChild(nameSpan);
+    textWrapper.appendChild(amountSpan);
 
     const deleteBtn = document.createElement("button");
     deleteBtn.textContent = "Usuń";
+    deleteBtn.className = "delete-btn";
     deleteBtn.onclick = function () {
       removeExpense(index);
     };
 
-    li.appendChild(textSpan);
+    li.appendChild(textWrapper);
     li.appendChild(deleteBtn);
     list.appendChild(li);
 
@@ -69,5 +89,9 @@ function render() {
 
   sumEl.textContent = sum.toFixed(2);
 }
+
+expenseDateInput.addEventListener("change", render);
+
+expenseDateInput.value = getTodayDate();
 
 render();

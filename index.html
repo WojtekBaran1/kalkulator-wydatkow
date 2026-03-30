@@ -2,21 +2,56 @@
 <html lang="pl">
 <head>
   <meta charset="UTF-8">
-  <title>Kalkulator</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Kalkulator wydatków</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
+  <div class="background-glow glow-1"></div>
+  <div class="background-glow glow-2"></div>
 
-<h1>Kalkulator wydatków</h1>
+  <main class="app-shell">
+    <section class="card">
+      <div class="header">
+        <p class="eyebrow">Personal Finance</p>
+        <h1>Kalkulator wydatków</h1>
+        <p class="subtitle">Dodawaj i przeglądaj swoje wydatki dla wybranego dnia.</p>
+      </div>
 
-<input id="name" placeholder="Nazwa">
-<input id="amount" placeholder="Kwota" type="number">
-<button onclick="add()">Dodaj</button>
+      <div class="date-section">
+        <label for="expenseDate">Data</label>
+        <input id="expenseDate" type="date">
+      </div>
 
-<ul id="list"></ul>
+      <div class="form-section">
+        <div class="input-group">
+          <label for="name">Nazwa wydatku</label>
+          <input id="name" placeholder="Np. Zakupy, paliwo, obiad">
+        </div>
 
-<p>Suma: <span id="sum">0</span> zł</p>
+        <div class="input-group">
+          <label for="amount">Kwota</label>
+          <input id="amount" placeholder="Np. 49.99" type="number" step="0.01">
+        </div>
 
-<script src="script.js"></script>
+        <button class="add-btn" onclick="add()">Dodaj wydatek</button>
+      </div>
+
+      <div class="summary-box">
+        <span class="summary-label">Suma wydatków</span>
+        <span class="summary-value"><span id="sum">0.00</span> zł</span>
+      </div>
+
+      <div class="list-section">
+        <div class="list-header">
+          <h2>Lista wydatków</h2>
+        </div>
+
+        <ul id="list" class="expense-list"></ul>
+      </div>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
 </body>
 </html>
