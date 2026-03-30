@@ -282,3 +282,18 @@ input:focus {
     width: 100%;
   }
 }
+
+/* 🔧 Fix dla input date na mobile (iOS) */
+input[type="date"] {
+  appearance: none;
+  -webkit-appearance: none;
+  position: relative;
+  padding-right: 14px;
+}
+
+/* usuwa dziwne style iOS */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(1);
+  opacity: 0.7;
+  cursor: pointer;
+}
