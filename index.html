@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Kalkulator wydatków</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <div class="background-glow glow-1"></div>
@@ -18,45 +18,74 @@
         <p class="subtitle">Dodawaj i przeglądaj swoje wydatki dla wybranego dnia.</p>
       </div>
 
-      <div class="date-section">
-        <label for="expenseDate">Data</label>
-        <input id="expenseDate" type="date">
+      <div id="authSection">
+        <div class="form-section">
+          <div class="input-group">
+            <label for="email">Email</label>
+            <input id="email" type="email" placeholder="twoj@email.com" />
+          </div>
+
+          <div class="input-group">
+            <label for="password">Hasło</label>
+            <input id="password" type="password" placeholder="Wpisz hasło" />
+          </div>
+
+          <div class="auth-buttons">
+            <button class="add-btn" id="loginBtn">Zaloguj</button>
+            <button class="secondary-btn" id="registerBtn">Zarejestruj</button>
+          </div>
+
+          <p id="authMessage" class="auth-message"></p>
+        </div>
       </div>
 
-      <div class="form-section">
-        <div class="input-group">
-          <label for="name">Nazwa wydatku</label>
-          <input id="name" placeholder="Np. Zakupy, paliwo, obiad">
+      <div id="appSection" style="display: none;">
+        <div class="top-bar">
+          <span id="userInfo" class="user-info"></span>
+          <button id="logoutBtn" class="secondary-btn">Wyloguj</button>
         </div>
 
-        <div class="input-group">
-          <label for="amount">Kwota</label>
-          <input id="amount" placeholder="Np. 49.99" type="number" step="0.01">
+        <div class="date-section">
+          <label for="expenseDate">Data</label>
+          <input id="expenseDate" type="date" />
         </div>
 
-        <button class="add-btn" onclick="add()">Dodaj wydatek</button>
-      </div>
+        <div class="form-section">
+          <div class="input-group">
+            <label for="name">Nazwa wydatku</label>
+            <input id="name" placeholder="Np. Zakupy, paliwo, obiad" />
+          </div>
 
-      <div class="summary-box">
-        <span class="summary-label">Suma wydatków</span>
-        <span class="summary-value"><span id="sum">0.00</span> zł</span>
-      </div>
+          <div class="input-group">
+            <label for="amount">Kwota</label>
+            <input id="amount" placeholder="Np. 49.99" type="number" step="0.01" />
+          </div>
 
-      <div class="month-summary">
-        <span>Podsumowanie miesiąca</span>
-        <span><span id="monthSum">0.00</span> zł</span>
-      </div>
-
-      <div class="list-section">
-        <div class="list-header">
-          <h2>Lista wydatków</h2>
+          <button class="add-btn" id="addExpenseBtn">Dodaj wydatek</button>
         </div>
 
-        <ul id="list" class="expense-list"></ul>
+        <div class="summary-box">
+          <span class="summary-label">Suma wydatków</span>
+          <span class="summary-value"><span id="sum">0.00</span> zł</span>
+        </div>
+
+        <div class="month-summary">
+          <span>Podsumowanie miesiąca</span>
+          <span><span id="monthSum">0.00</span> zł</span>
+        </div>
+
+        <div class="list-section">
+          <div class="list-header">
+            <h2>Lista wydatków</h2>
+          </div>
+
+          <ul id="list" class="expense-list"></ul>
+        </div>
       </div>
     </section>
   </main>
 
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="script.js"></script>
 </body>
 </html>

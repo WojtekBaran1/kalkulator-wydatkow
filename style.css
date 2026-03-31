@@ -297,3 +297,48 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   opacity: 0.7;
   cursor: pointer;
 }
+
+.auth-buttons {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.secondary-btn {
+  border: 1px solid rgba(115, 153, 255, 0.25);
+  background: rgba(255, 255, 255, 0.06);
+  color: #f5f7ff;
+  border-radius: 16px;
+  padding: 15px 18px;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: 0.18s ease;
+}
+
+.secondary-btn:hover {
+  border-color: #5de4ff;
+  box-shadow: 0 0 18px rgba(93, 228, 255, 0.14);
+}
+
+.auth-message {
+  min-height: 24px;
+  margin-top: 12px;
+  color: #9feaff;
+}
+
+.top-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  margin-top: 12px;
+  margin-bottom: 18px;
+  flex-wrap: wrap;
+}
+
+.user-info {
+  color: #b8c4e8;
+  font-size: 14px;
+  word-break: break-word;
+}
