@@ -102,9 +102,22 @@ if (user) {
 }
 
 async function signOut() {
-  await supabaseClient.auth.signOut();
+  console.log("Kliknięto wyloguj");
+
+  const { error } = await supabaseClient.auth.signOut();
+
+  console.log("Wynik wylogowania:", error);
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
   showAuthSection();
-  window.location.reload();
+
+  setTimeout(() => {
+    window.location.reload();
+  }, 100);
 }
 
 async function getCurrentUser() {
@@ -323,7 +336,10 @@ function switchTab(tabName) {
 
 loginBtn.addEventListener("click", signIn);
 registerBtn.addEventListener("click", signUp);
-logoutBtn.addEventListener("click", signOut);
+logoutBtn.addEventListener("click", () => {
+  console.log("Klik logoutBtn");
+  signOut();
+});
 addExpenseBtn.addEventListener("click", addExpense);
 expenseDateInput.addEventListener("change", render);
 
