@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Kalkulator wydatków</title>
-  <link rel="stylesheet" href="style.css" />
+  <title>Kalkulator budżetu</title>
+  <link rel="stylesheet" href="style.css?v=20" />
 </head>
 <body>
   <div class="background-glow glow-1"></div>
@@ -14,9 +14,11 @@
     <section class="card">
       <div class="header">
         <p class="eyebrow">Personal Finance</p>
-        <h1>Kalkulator wydatków</h1>
+        <h1>Kalkulator budżetu</h1>
         <p class="subtitle">Dodawaj i przeglądaj swoje wydatki dla wybranego dnia.</p>
       </div>
+
+      <div id="loadingSection">Sprawdzanie sesji...</div>
 
       <div id="authSection">
         <div class="form-section">
@@ -45,47 +47,69 @@
           <button id="logoutBtn" class="secondary-btn">Wyloguj</button>
         </div>
 
-        <div class="date-section">
-          <label for="expenseDate">Data</label>
-          <input id="expenseDate" type="date" />
+        <div class="tabs">
+          <button class="tab-btn active" data-tab="costs">Koszty</button>
+          <button class="tab-btn" data-tab="income">Przychody</button>
+          <button class="tab-btn" data-tab="reports">Raporty</button>
         </div>
 
-        <div class="form-section">
-          <div class="input-group">
-            <label for="name">Nazwa wydatku</label>
-            <input id="name" placeholder="Np. Zakupy, paliwo, obiad" />
+        <div id="costsTab" class="tab-content active">
+          <div class="date-section">
+            <label for="expenseDate">Data</label>
+            <input id="expenseDate" type="date" />
           </div>
 
-          <div class="input-group">
-            <label for="amount">Kwota</label>
-            <input id="amount" placeholder="Np. 49.99" type="number" step="0.01" />
+          <div class="form-section">
+            <div class="input-group">
+              <label for="name">Nazwa wydatku</label>
+              <input id="name" placeholder="Np. Zakupy, paliwo, obiad" />
+            </div>
+
+            <div class="input-group">
+              <label for="amount">Kwota</label>
+              <input id="amount" placeholder="Np. 49.99" type="number" step="0.01" />
+            </div>
+
+            <button class="add-btn" id="addExpenseBtn">Dodaj wydatek</button>
           </div>
 
-          <button class="add-btn" id="addExpenseBtn">Dodaj wydatek</button>
-        </div>
-
-        <div class="summary-box">
-          <span class="summary-label">Suma wydatków</span>
-          <span class="summary-value"><span id="sum">0.00</span> zł</span>
-        </div>
-
-        <div class="month-summary">
-          <span>Podsumowanie miesiąca</span>
-          <span><span id="monthSum">0.00</span> zł</span>
-        </div>
-
-        <div class="list-section">
-          <div class="list-header">
-            <h2>Lista wydatków</h2>
+          <div class="summary-box">
+            <span class="summary-label">Suma wydatków</span>
+            <span class="summary-value"><span id="sum">0.00</span> zł</span>
           </div>
 
-          <ul id="list" class="expense-list"></ul>
+          <div class="month-summary">
+            <span>Podsumowanie miesiąca</span>
+            <span><span id="monthSum">0.00</span> zł</span>
+          </div>
+
+          <div class="list-section">
+            <div class="list-header">
+              <h2>Lista wydatków</h2>
+            </div>
+
+            <ul id="list" class="expense-list"></ul>
+          </div>
+        </div>
+
+        <div id="incomeTab" class="tab-content">
+          <div class="placeholder-panel">
+            <h2>Przychody</h2>
+            <p>Ta sekcja jest jeszcze w przygotowaniu.</p>
+          </div>
+        </div>
+
+        <div id="reportsTab" class="tab-content">
+          <div class="placeholder-panel">
+            <h2>Raporty</h2>
+            <p>Ta sekcja jest jeszcze w przygotowaniu.</p>
+          </div>
         </div>
       </div>
     </section>
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="script.js"></script>
+  <script src="script.js?v=20"></script>
 </body>
 </html>

@@ -22,6 +22,13 @@ const sumEl = document.getElementById("sum");
 const monthSumEl = document.getElementById("monthSum");
 const addExpenseBtn = document.getElementById("addExpenseBtn");
 
+const tabButtons = document.querySelectorAll(".tab-btn");
+const costsTab = document.getElementById("costsTab");
+const incomeTab = document.getElementById("incomeTab");
+const reportsTab = document.getElementById("reportsTab");
+
+const loadingSection = document.getElementById("loadingSection");
+
 function getTodayDate() {
   return new Date().toISOString().split("T")[0];
 }
@@ -44,10 +51,12 @@ async function signUp() {
     return;
   }
 
-  const { error } = await supabaseClient.auth.signUp({
+  const { data, error } = await supabaseClient.auth.signUp({
     email,
     password
   });
+
+  console.log("Wynik rejestracji:", { data, error });
 
   if (error) {
     setAuthMessage(error.message, true);
@@ -72,25 +81,38 @@ async function signIn() {
   });
 
   if (error) {
-    setAuthMessage(error.message, true);
-    return;
+  console.log("Błąd logowania:", error);
+  setAuthMessage(error.message, true);
+  return;
   }
 
-  setAuthMessage("");
+  console.log("Poprawnie zalogowano.");
+setAuthMessage("");
+
+const user = await getCurrentUser();
+console.log("User po signIn:", user);
+
+if (user) {
+  showAppSection(user);
+  switchTab("costs");
+  await render();
+} else {
   await checkAuth();
+}
 }
 
 async function signOut() {
   await supabaseClient.auth.signOut();
-  await checkAuth();
+  showAuthSection();
+  window.location.reload();
 }
 
 async function getCurrentUser() {
   const {
-    data: { user }
-  } = await supabaseClient.auth.getUser();
+    data: { session }
+  } = await supabaseClient.auth.getSession();
 
-  return user;
+  return session?.user ?? null;
 }
 
 async function getExpenses() {
@@ -236,19 +258,66 @@ async function render() {
   monthSumEl.textContent = monthTotal.toFixed(2);
 }
 
+function showLoadingSection() {
+  loadingSection.style.display = "block";
+  authSection.style.display = "none";
+  appSection.style.display = "none";
+}
+
+function showAuthSection() {
+  loadingSection.style.display = "none";
+  authSection.style.display = "block";
+  appSection.style.display = "none";
+  userInfo.textContent = "";
+}
+
+function showAppSection(user) {
+  loadingSection.style.display = "none";
+  authSection.style.display = "none";
+  appSection.style.display = "block";
+  userInfo.textContent = `Zalogowano jako: ${user.email}`;
+  expenseDateInput.value = expenseDateInput.value || getTodayDate();
+}
+
 async function checkAuth() {
   const user = await getCurrentUser();
 
+  console.log("checkAuth user:", user);
+
   if (user) {
-    authSection.style.display = "none";
-    appSection.style.display = "block";
-    userInfo.textContent = `Zalogowano jako: ${user.email}`;
-    expenseDateInput.value = expenseDateInput.value || getTodayDate();
+    showAppSection(user);
+    switchTab("costs");
     await render();
   } else {
-    authSection.style.display = "block";
-    appSection.style.display = "none";
-    userInfo.textContent = "";
+    showAuthSection();
+  }
+}
+
+function switchTab(tabName) {
+  tabButtons.forEach((btn) => {
+    btn.classList.remove("active");
+  });
+
+  costsTab.classList.remove("active");
+  incomeTab.classList.remove("active");
+  reportsTab.classList.remove("active");
+
+  const selectedTabButton = document.querySelector(`.tab-btn[data-tab="${tabName}"]`);
+
+  if (selectedTabButton) {
+    selectedTabButton.classList.add("active");
+  }
+
+  if (tabName === "costs") {
+    costsTab.classList.add("active");
+  }
+
+  if (tabName === "income") {
+    incomeTab.classList.add("active");
+  }
+
+  if (tabName === "reports") {
+    reportsTab.classList.add("active");
   }
 }
 
@@ -258,8 +327,16 @@ logoutBtn.addEventListener("click", signOut);
 addExpenseBtn.addEventListener("click", addExpense);
 expenseDateInput.addEventListener("change", render);
 
-supabaseClient.auth.onAuthStateChange(async () => {
-  await checkAuth();
+supabaseClient.auth.onAuthStateChange(async (event, session) => {
+  console.log("Auth event:", event, session);
+
+  if (session?.user) {
+    showAppSection(session.user);
+    switchTab("costs");
+    await render();
+  } else {
+    showAuthSection();
+  }
 });
 
 expenseDateInput.value = getTodayDate();
