@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Kalkulator budżetu</title>
-  <link rel="stylesheet" href="style.css?v=20" />
+  <link rel="stylesheet" href="style.css?v=21" />
 </head>
 <body>
   <div class="background-glow glow-1"></div>
@@ -83,6 +83,16 @@
             <span><span id="monthSum">0.00</span> zł</span>
           </div>
 
+          <div class="month-summary income-month-summary">
+            <span>Przychody miesiąca</span>
+            <span><span id="costsTabIncomeSum">0.00</span> zł</span>
+          </div>
+
+          <div class="month-summary budget-month-summary">
+            <span>Budżet</span>
+            <span id="budgetSum">0.00 zł</span>
+          </div>
+
           <div class="list-section">
             <div class="list-header">
               <h2>Lista wydatków</h2>
@@ -93,9 +103,40 @@
         </div>
 
         <div id="incomeTab" class="tab-content">
-          <div class="placeholder-panel">
-            <h2>Przychody</h2>
-            <p>Ta sekcja jest jeszcze w przygotowaniu.</p>
+          <div class="date-section">
+            <label for="incomeDate">Data</label>
+            <input id="incomeDate" type="date" />
+          </div>
+
+          <div class="form-section">
+            <div class="input-group">
+              <label for="incomeName">Nazwa przychodu</label>
+              <input id="incomeName" placeholder="Np. Wynagrodzenie, premia, freelance" />
+            </div>
+
+            <div class="input-group">
+              <label for="incomeAmount">Kwota</label>
+              <input id="incomeAmount" placeholder="Np. 4999.99" type="number" step="0.01" />
+            </div>
+
+            <button class="add-btn" id="addIncomeBtn">Dodaj przychód</button>
+          </div>
+
+          <div class="summary-box">
+            <span class="summary-label">Suma przychodów</span>
+            <span class="summary-value income-value"><span id="incomeSum">0.00</span> zł</span>
+          </div>
+
+          <div class="month-summary income-month-summary">
+            <span>Podsumowanie miesiąca</span>
+            <span><span id="incomeMonthSum">0.00</span> zł</span>
+          </div>
+
+          <div class="list-section">
+            <div class="list-header">
+              <h2>Lista przychodów</h2>
+            </div>
+            <ul id="incomeList" class="expense-list"></ul>
           </div>
         </div>
 
@@ -110,6 +151,6 @@
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="script.js?v=20"></script>
+  <script src="script.js?v=21"></script>
 </body>
 </html>

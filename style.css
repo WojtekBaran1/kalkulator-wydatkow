@@ -402,3 +402,34 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   margin: 0;
   color: #b9c5ef;
 }
+
+.income-value {
+  color: #76ffb0;
+  text-shadow: 0 0 14px rgba(118, 255, 176, 0.35);
+}
+
+.income-amount {
+  font-size: 14px;
+  color: #76ffb0;
+}
+
+.income-month-summary {
+  background: rgba(118, 255, 176, 0.08);
+  border-color: rgba(118, 255, 176, 0.25);
+  color: #9fffca;
+  box-shadow: 0 0 20px rgba(118, 255, 176, 0.12);
+}
+
+.budget-month-summary {
+  background: rgba(93, 173, 255, 0.06);
+  border-color: rgba(93, 173, 255, 0.28);
+  color: #b9c5ef;
+  font-weight: bold;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 14px;
+  padding: 14px 18px;
+  border-radius: 14px;
+  box-shadow: 0 0 20px rgba(93, 173, 255, 0.10);
+}

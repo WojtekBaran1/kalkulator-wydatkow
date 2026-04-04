@@ -29,6 +29,16 @@ const sumEl = document.getElementById("sum");
 const monthSumEl = document.getElementById("monthSum");
 const addExpenseBtn = document.getElementById("addExpenseBtn");
 
+const incomeNameInput = document.getElementById("incomeName");
+const incomeAmountInput = document.getElementById("incomeAmount");
+const incomeDateInput = document.getElementById("incomeDate");
+const incomeList = document.getElementById("incomeList");
+const incomeSumEl = document.getElementById("incomeSum");
+const incomeMonthSumEl = document.getElementById("incomeMonthSum");
+const addIncomeBtn = document.getElementById("addIncomeBtn");
+const costsTabIncomeSumEl = document.getElementById("costsTabIncomeSum");
+const budgetSumEl = document.getElementById("budgetSum");
+
 const tabButtons = document.querySelectorAll(".tab-btn");
 const costsTab = document.getElementById("costsTab");
 const incomeTab = document.getElementById("incomeTab");
@@ -42,6 +52,10 @@ function getTodayDate() {
 
 function getSelectedDate() {
   return expenseDateInput.value || getTodayDate();
+}
+
+function getSelectedIncomeDate() {
+  return incomeDateInput.value || getTodayDate();
 }
 
 function setAuthMessage(message, isError = false) {
@@ -132,10 +146,10 @@ async function getExpenses() {
   return data || [];
 }
 
-async function calculateMonthSum() {
+async function calculateMonthSum(dateStr) {
   if (!currentUser) return 0;
 
-  const selectedDate = new Date(getSelectedDate());
+  const selectedDate = new Date(dateStr || getSelectedDate());
   const year = selectedDate.getFullYear();
   const month = selectedDate.getMonth();
 
@@ -155,6 +169,145 @@ async function calculateMonthSum() {
   }
 
   return (data || []).reduce((sum, item) => sum + Number(item.amount), 0);
+}
+
+async function calculateMonthIncomeSum(dateStr) {
+  if (!currentUser) return 0;
+
+  const selectedDate = new Date(dateStr || getSelectedIncomeDate());
+  const year = selectedDate.getFullYear();
+  const month = selectedDate.getMonth();
+
+  const start = new Date(year, month, 1).toISOString().split("T")[0];
+  const end = new Date(year, month + 1, 1).toISOString().split("T")[0];
+
+  const { data, error } = await supabaseClient
+    .from("incomes")
+    .select("amount")
+    .eq("user_id", currentUser.id)
+    .gte("income_date", start)
+    .lt("income_date", end);
+
+  if (error) {
+    alert(error.message);
+    return 0;
+  }
+
+  return (data || []).reduce((sum, item) => sum + Number(item.amount), 0);
+}
+
+async function getIncomes() {
+  if (!currentUser) return [];
+
+  const selectedDate = getSelectedIncomeDate();
+
+  const { data, error } = await supabaseClient
+    .from("incomes")
+    .select("*")
+    .eq("user_id", currentUser.id)
+    .eq("income_date", selectedDate)
+    .order("created_at", { ascending: true });
+
+  if (error) {
+    alert(error.message);
+    return [];
+  }
+
+  return data || [];
+}
+
+async function addIncome() {
+  if (!currentUser) {
+    alert("Najpierw się zaloguj.");
+    return;
+  }
+
+  const name = incomeNameInput.value.trim();
+  const amount = parseFloat(incomeAmountInput.value);
+  const incomeDate = getSelectedIncomeDate();
+
+  if (!name || isNaN(amount) || amount <= 0) {
+    alert("Wpisz poprawną nazwę i kwotę większą od 0.");
+    return;
+  }
+
+  const { error } = await supabaseClient
+    .from("incomes")
+    .insert([
+      {
+        user_id: currentUser.id,
+        income_date: incomeDate,
+        name,
+        amount
+      }
+    ]);
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  incomeNameInput.value = "";
+  incomeAmountInput.value = "";
+
+  await renderIncome();
+}
+
+async function removeIncome(id) {
+  const { error } = await supabaseClient
+    .from("incomes")
+    .delete()
+    .eq("id", id);
+
+  if (error) {
+    alert(error.message);
+    return;
+  }
+
+  await renderIncome();
+}
+
+async function renderIncome() {
+  const incomes = await getIncomes();
+
+  incomeList.innerHTML = "";
+  let sum = 0;
+
+  incomes.forEach((income) => {
+    const li = document.createElement("li");
+
+    const textWrapper = document.createElement("div");
+    textWrapper.className = "expense-text";
+
+    const nameSpan = document.createElement("span");
+    nameSpan.className = "expense-name";
+    nameSpan.textContent = income.name;
+
+    const amountSpan = document.createElement("span");
+    amountSpan.className = "income-amount";
+    amountSpan.textContent = `${Number(income.amount).toFixed(2)} zł`;
+
+    textWrapper.appendChild(nameSpan);
+    textWrapper.appendChild(amountSpan);
+
+    const deleteBtn = document.createElement("button");
+    deleteBtn.textContent = "Usuń";
+    deleteBtn.className = "delete-btn";
+    deleteBtn.onclick = function () {
+      removeIncome(income.id);
+    };
+
+    li.appendChild(textWrapper);
+    li.appendChild(deleteBtn);
+    incomeList.appendChild(li);
+
+    sum += Number(income.amount);
+  });
+
+  incomeSumEl.textContent = sum.toFixed(2);
+
+  const monthTotal = await calculateMonthIncomeSum();
+  incomeMonthSumEl.textContent = monthTotal.toFixed(2);
 }
 
 async function addExpense() {
@@ -249,6 +402,13 @@ async function render() {
 
   const monthTotal = await calculateMonthSum();
   monthSumEl.textContent = monthTotal.toFixed(2);
+
+  const monthIncome = await calculateMonthIncomeSum(getSelectedDate());
+  costsTabIncomeSumEl.textContent = monthIncome.toFixed(2);
+
+  const budget = monthIncome - monthTotal;
+  budgetSumEl.textContent = budget.toFixed(2) + " zł";
+  budgetSumEl.style.color = budget >= 0 ? "#76ffb0" : "#ff8eb7";
 }
 
 function showLoadingSection() {
@@ -301,6 +461,12 @@ function switchTab(tabName) {
   }
 }
 
+tabButtons.forEach((btn) => {
+  btn.addEventListener("click", () => {
+    switchTab(btn.dataset.tab);
+  });
+});
+
 loginBtn.addEventListener("click", signIn);
 registerBtn.addEventListener("click", signUp);
 logoutBtn.addEventListener("click", () => {
@@ -309,8 +475,11 @@ logoutBtn.addEventListener("click", () => {
 });
 addExpenseBtn.addEventListener("click", addExpense);
 expenseDateInput.addEventListener("change", render);
+addIncomeBtn.addEventListener("click", addIncome);
+incomeDateInput.addEventListener("change", renderIncome);
 
 expenseDateInput.value = getTodayDate();
+incomeDateInput.value = getTodayDate();
 
 supabaseClient.auth.onAuthStateChange(async (event, session) => {
   console.log("Auth event:", event, session);
@@ -321,6 +490,7 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
     showAppSection(currentUser);
     switchTab("costs");
     await render();
+    await renderIncome();
   } else {
     showAuthSection();
   }
