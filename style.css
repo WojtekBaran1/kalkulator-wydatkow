@@ -374,7 +374,8 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   box-shadow:
     0 0 20px rgba(93, 228, 255, 0.22),
     0 0 40px rgba(106, 168, 255, 0.12);
-  border-color: transparent;
+  border: none;
+  outline: none;
 }
 
 .tab-content {
@@ -418,6 +419,29 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   border-color: rgba(118, 255, 176, 0.25);
   color: #9fffca;
   box-shadow: 0 0 20px rgba(118, 255, 176, 0.12);
+}
+
+.chart-card {
+  margin-top: 22px;
+  padding: 20px 20px 14px;
+  border-radius: 18px;
+  background: rgba(10, 15, 31, 0.6);
+  border: 1px solid rgba(93, 173, 255, 0.16);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
+}
+
+.chart-title {
+  margin: 0 0 16px;
+  font-size: 15px;
+  font-weight: bold;
+  color: #b8c4e8;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.chart-wrap {
+  position: relative;
+  height: 190px;
 }
 
 .budget-month-summary {

@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Kalkulator budżetu</title>
-  <link rel="stylesheet" href="style.css?v=21" />
+  <link rel="stylesheet" href="style.css?v=22" />
 </head>
 <body>
   <div class="background-glow glow-1"></div>
@@ -141,9 +141,23 @@
         </div>
 
         <div id="reportsTab" class="tab-content">
-          <div class="placeholder-panel">
-            <h2>Raporty</h2>
-            <p>Ta sekcja jest jeszcze w przygotowaniu.</p>
+          <div class="chart-card">
+            <h3 class="chart-title">Przychody miesięczne</h3>
+            <div class="chart-wrap">
+              <canvas id="chartIncomes"></canvas>
+            </div>
+          </div>
+          <div class="chart-card">
+            <h3 class="chart-title">Koszty miesięczne</h3>
+            <div class="chart-wrap">
+              <canvas id="chartCosts"></canvas>
+            </div>
+          </div>
+          <div class="chart-card">
+            <h3 class="chart-title">Oszczędności miesięczne</h3>
+            <div class="chart-wrap">
+              <canvas id="chartSavings"></canvas>
+            </div>
           </div>
         </div>
       </div>
@@ -151,6 +165,7 @@
   </main>
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-  <script src="script.js?v=21"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
+  <script src="script.js?v=22"></script>
 </body>
 </html>
