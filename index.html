@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Kalkulator budżetu</title>
-  <link rel="stylesheet" href="style.css?v=22" />
+  <link rel="stylesheet" href="style.css?v=23" />
 </head>
 <body>
   <div class="background-glow glow-1"></div>
@@ -21,7 +21,7 @@
       <div id="loadingSection">Sprawdzanie sesji...</div>
 
       <div id="authSection">
-        <div class="form-section">
+        <div id="loginForm" class="form-section">
           <div class="input-group">
             <label for="email">Email</label>
             <input id="email" type="email" placeholder="twoj@email.com" />
@@ -29,7 +29,12 @@
 
           <div class="input-group">
             <label for="password">Hasło</label>
-            <input id="password" type="password" placeholder="Wpisz hasło" />
+            <div class="password-wrapper">
+              <input id="password" type="password" placeholder="Wpisz hasło" />
+              <button type="button" id="togglePassword" class="toggle-password-btn" title="Pokaż hasło">
+                <svg id="eyeIcon" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
           </div>
 
           <div class="auth-buttons">
@@ -37,7 +42,35 @@
             <button class="secondary-btn" id="registerBtn">Zarejestruj</button>
           </div>
 
+          <button type="button" class="forgot-link" id="forgotBtn">Zapomniałem hasła</button>
           <p id="authMessage" class="auth-message"></p>
+        </div>
+
+        <div id="forgotForm" class="form-section" style="display:none;">
+          <div class="input-group">
+            <label for="resetEmail">Podaj swój email</label>
+            <input id="resetEmail" type="email" placeholder="twoj@email.com" />
+          </div>
+          <button class="add-btn" id="sendResetBtn">Wyślij link resetujący</button>
+          <button type="button" class="forgot-link" id="backToLoginBtn" style="margin-top:12px;">Wróć do logowania</button>
+          <p id="resetMessage" class="auth-message"></p>
+        </div>
+      </div>
+
+      <div id="resetSection" style="display:none;">
+        <div class="form-section">
+          <p style="color:#b8c4e8; margin-bottom:16px;">Wpisz nowe hasło dla swojego konta.</p>
+          <div class="input-group">
+            <label for="newPassword">Nowe hasło</label>
+            <div class="password-wrapper">
+              <input id="newPassword" type="password" placeholder="Wpisz nowe hasło" />
+              <button type="button" id="toggleNewPassword" class="toggle-password-btn" title="Pokaż hasło">
+                <svg id="eyeIconNew" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+              </button>
+            </div>
+          </div>
+          <button class="add-btn" id="setPasswordBtn">Ustaw nowe hasło</button>
+          <p id="setPasswordMessage" class="auth-message"></p>
         </div>
       </div>
 
@@ -166,6 +199,6 @@
 
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <script src="https://cdn.jsdelivr.net/npm/chart.js@4"></script>
-  <script src="script.js?v=22"></script>
+  <script src="js/main.js" type="module"></script>
 </body>
 </html>

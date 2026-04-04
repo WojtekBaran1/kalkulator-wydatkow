@@ -298,6 +298,49 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   cursor: pointer;
 }
 
+.password-wrapper {
+  position: relative;
+}
+
+.password-wrapper input {
+  padding-right: 46px;
+}
+
+.toggle-password-btn {
+  position: absolute;
+  right: 12px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #8ea0d1;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  transition: color 0.18s ease;
+}
+
+.toggle-password-btn:hover {
+  color: #5de4ff;
+}
+
+.forgot-link {
+  background: none;
+  border: none;
+  color: #8ea0d1;
+  font-size: 13px;
+  cursor: pointer;
+  padding: 0;
+  margin-top: 10px;
+  display: block;
+  transition: color 0.18s ease;
+}
+
+.forgot-link:hover {
+  color: #5de4ff;
+}
+
 .auth-buttons {
   display: flex;
   gap: 12px;
