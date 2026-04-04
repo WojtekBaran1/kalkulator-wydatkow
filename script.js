@@ -1,7 +1,14 @@
 const SUPABASE_URL = "https://mqqxyymaovfgknpeqyuu.supabase.co";
 const SUPABASE_ANON_KEY = "sb_publishable_YtL_0LwSwcp2SK_NJzVhaA_iN4xksw_";
 
-const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: {
+    storage: window.sessionStorage,
+    persistSession: true,
+  }
+});
+
+let currentUser = null;
 
 const authSection = document.getElementById("authSection");
 const appSection = document.getElementById("appSection");
@@ -81,24 +88,14 @@ async function signIn() {
   });
 
   if (error) {
-  console.log("Błąd logowania:", error);
-  setAuthMessage(error.message, true);
-  return;
+    console.log("Błąd logowania:", error);
+    setAuthMessage(error.message, true);
+    return;
   }
 
   console.log("Poprawnie zalogowano.");
-setAuthMessage("");
-
-const user = await getCurrentUser();
-console.log("User po signIn:", user);
-
-if (user) {
-  showAppSection(user);
-  switchTab("costs");
-  await render();
-} else {
-  await checkAuth();
-}
+  setAuthMessage("");
+  // onAuthStateChange handles showing the app and loading data
 }
 
 async function signOut() {
@@ -112,32 +109,18 @@ async function signOut() {
     alert(error.message);
     return;
   }
-
-  showAuthSection();
-
-  setTimeout(() => {
-    window.location.reload();
-  }, 100);
-}
-
-async function getCurrentUser() {
-  const {
-    data: { session }
-  } = await supabaseClient.auth.getSession();
-
-  return session?.user ?? null;
+  // onAuthStateChange handles showing the auth section
 }
 
 async function getExpenses() {
-  const user = await getCurrentUser();
-  if (!user) return [];
+  if (!currentUser) return [];
 
   const selectedDate = getSelectedDate();
 
   const { data, error } = await supabaseClient
     .from("expenses")
     .select("*")
-    .eq("user_id", user.id)
+    .eq("user_id", currentUser.id)
     .eq("expense_date", selectedDate)
     .order("created_at", { ascending: true });
 
@@ -150,8 +133,7 @@ async function getExpenses() {
 }
 
 async function calculateMonthSum() {
-  const user = await getCurrentUser();
-  if (!user) return 0;
+  if (!currentUser) return 0;
 
   const selectedDate = new Date(getSelectedDate());
   const year = selectedDate.getFullYear();
@@ -163,7 +145,7 @@ async function calculateMonthSum() {
   const { data, error } = await supabaseClient
     .from("expenses")
     .select("amount")
-    .eq("user_id", user.id)
+    .eq("user_id", currentUser.id)
     .gte("expense_date", start)
     .lt("expense_date", end);
 
@@ -176,9 +158,7 @@ async function calculateMonthSum() {
 }
 
 async function addExpense() {
-  const user = await getCurrentUser();
-
-  if (!user) {
+  if (!currentUser) {
     alert("Najpierw się zaloguj.");
     return;
   }
@@ -196,7 +176,7 @@ async function addExpense() {
     .from("expenses")
     .insert([
       {
-        user_id: user.id,
+        user_id: currentUser.id,
         expense_date: expenseDate,
         name,
         amount
@@ -292,19 +272,6 @@ function showAppSection(user) {
   expenseDateInput.value = expenseDateInput.value || getTodayDate();
 }
 
-async function checkAuth() {
-  const user = await getCurrentUser();
-
-  console.log("checkAuth user:", user);
-
-  if (user) {
-    showAppSection(user);
-    switchTab("costs");
-    await render();
-  } else {
-    showAuthSection();
-  }
-}
 
 function switchTab(tabName) {
   tabButtons.forEach((btn) => {
@@ -343,17 +310,18 @@ logoutBtn.addEventListener("click", () => {
 addExpenseBtn.addEventListener("click", addExpense);
 expenseDateInput.addEventListener("change", render);
 
+expenseDateInput.value = getTodayDate();
+
 supabaseClient.auth.onAuthStateChange(async (event, session) => {
   console.log("Auth event:", event, session);
 
-  if (session?.user) {
-    showAppSection(session.user);
+  currentUser = session?.user ?? null;
+
+  if (currentUser) {
+    showAppSection(currentUser);
     switchTab("costs");
     await render();
   } else {
     showAuthSection();
   }
 });
-
-expenseDateInput.value = getTodayDate();
-checkAuth();
