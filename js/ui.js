@@ -1,12 +1,13 @@
 // --- DOM refs ---
-const loadingSection = document.getElementById("loadingSection");
-const authSection    = document.getElementById("authSection");
-const appSection     = document.getElementById("appSection");
-const resetSection   = document.getElementById("resetSection");
-const loginForm      = document.getElementById("loginForm");
-const forgotForm     = document.getElementById("forgotForm");
-const userInfo       = document.getElementById("userInfo");
-const authMessage    = document.getElementById("authMessage");
+const loadingSection  = document.getElementById("loadingSection");
+const authSection     = document.getElementById("authSection");
+const appSection      = document.getElementById("appSection");
+const resetSection    = document.getElementById("resetSection");
+const settingsSection = document.getElementById("settingsSection");
+const loginForm       = document.getElementById("loginForm");
+const forgotForm      = document.getElementById("forgotForm");
+const userInfo        = document.getElementById("userInfo");
+const authMessage     = document.getElementById("authMessage");
 
 const costsTab   = document.getElementById("costsTab");
 const incomeTab  = document.getElementById("incomeTab");
@@ -27,37 +28,42 @@ export function setAuthMessage(message, isError = false) {
 }
 
 // --- Section visibility ---
+function hideAll() {
+  loadingSection.style.display  = "none";
+  authSection.style.display     = "none";
+  appSection.style.display      = "none";
+  resetSection.style.display    = "none";
+  settingsSection.style.display = "none";
+}
+
 export function showLoadingSection() {
+  hideAll();
   loadingSection.style.display = "block";
-  authSection.style.display    = "none";
-  appSection.style.display     = "none";
-  resetSection.style.display   = "none";
 }
 
 export function showAuthSection() {
-  loadingSection.style.display = "none";
-  authSection.style.display    = "block";
-  appSection.style.display     = "none";
-  resetSection.style.display   = "none";
-  loginForm.style.display      = "block";
-  forgotForm.style.display     = "none";
-  userInfo.textContent         = "";
+  hideAll();
+  authSection.style.display = "block";
+  loginForm.style.display   = "block";
+  forgotForm.style.display  = "none";
+  userInfo.textContent      = "";
 }
 
 export function showAppSection(user) {
-  loadingSection.style.display = "none";
-  authSection.style.display    = "none";
-  appSection.style.display     = "block";
-  resetSection.style.display   = "none";
-  userInfo.textContent         = `Zalogowano jako: ${user.email}`;
-  expenseDateInput.value       = expenseDateInput.value || getTodayDate();
+  hideAll();
+  appSection.style.display = "block";
+  userInfo.textContent     = `Zalogowano jako: ${user.email}`;
+  expenseDateInput.value   = expenseDateInput.value || getTodayDate();
 }
 
 export function showResetSection() {
-  loadingSection.style.display = "none";
-  authSection.style.display    = "none";
-  appSection.style.display     = "none";
-  resetSection.style.display   = "block";
+  hideAll();
+  resetSection.style.display = "block";
+}
+
+export function showSettingsSection() {
+  hideAll();
+  settingsSection.style.display = "block";
 }
 
 // --- Tab switching ---

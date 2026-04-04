@@ -4,14 +4,45 @@ import { getTodayDate } from "./ui.js";
 import { calculateMonthIncomeSum } from "./income.js";
 
 // --- DOM refs ---
-const expenseDateInput   = document.getElementById("expenseDate");
-const expenseNameInput   = document.getElementById("name");
-const expenseAmountInput = document.getElementById("amount");
-const list               = document.getElementById("list");
-const sumEl              = document.getElementById("sum");
-const monthSumEl         = document.getElementById("monthSum");
+const expenseDateInput    = document.getElementById("expenseDate");
+const expenseNameInput    = document.getElementById("name");
+const expenseAmountInput  = document.getElementById("amount");
+const expenseKindSelect   = document.getElementById("expenseKind");
+const list                = document.getElementById("list");
+const sumEl               = document.getElementById("sum");
+const monthSumEl          = document.getElementById("monthSum");
 const costsTabIncomeSumEl = document.getElementById("costsTabIncomeSum");
-const budgetSumEl        = document.getElementById("budgetSum");
+const budgetSumEl         = document.getElementById("budgetSum");
+
+// --- Kind dictionary ---
+export let kindCostMap = {};
+
+export async function loadKindCost() {
+  if (!state.currentUser) return;
+
+  const savedValue = expenseKindSelect.value;
+
+  const { data, error } = await supabaseClient
+    .from("kind_cost")
+    .select("id, name")
+    .eq("user_id", state.currentUser.id)
+    .order("name");
+
+  if (error) { alert(error.message); return; }
+
+  kindCostMap = {};
+  expenseKindSelect.innerHTML = '<option value="">— Wybierz rodzaj —</option>';
+
+  (data || []).forEach(k => {
+    kindCostMap[k.id] = k.name;
+    const opt = document.createElement("option");
+    opt.value       = k.id;
+    opt.textContent = k.name;
+    expenseKindSelect.appendChild(opt);
+  });
+
+  expenseKindSelect.value = savedValue;
+}
 
 // --- Helpers ---
 export function getSelectedDate() {
@@ -59,8 +90,9 @@ export async function calculateMonthSum(dateStr) {
 export async function addExpense() {
   if (!state.currentUser) { alert("Najpierw się zaloguj."); return; }
 
-  const name   = expenseNameInput.value.trim();
-  const amount = parseFloat(expenseAmountInput.value);
+  const name    = expenseNameInput.value.trim();
+  const amount  = parseFloat(expenseAmountInput.value);
+  const kind_id = expenseKindSelect.value || null;
 
   if (!name || isNaN(amount) || amount <= 0) {
     alert("Wpisz poprawną nazwę i kwotę większą od 0.");
@@ -71,13 +103,15 @@ export async function addExpense() {
     user_id:      state.currentUser.id,
     expense_date: getSelectedDate(),
     name,
-    amount
+    amount,
+    kind_id
   }]);
 
   if (error) { alert(error.message); return; }
 
-  expenseNameInput.value   = "";
+  expenseNameInput.value  = "";
   expenseAmountInput.value = "";
+  expenseKindSelect.value  = "";
   await render();
 }
 
@@ -109,6 +143,13 @@ export async function render() {
     textWrapper.appendChild(nameSpan);
     textWrapper.appendChild(amountSpan);
 
+    if (expense.kind_id && kindCostMap[expense.kind_id]) {
+      const badge = document.createElement("span");
+      badge.className   = "kind-badge";
+      badge.textContent = kindCostMap[expense.kind_id];
+      textWrapper.appendChild(badge);
+    }
+
     const deleteBtn = document.createElement("button");
     deleteBtn.textContent = "Usuń";
     deleteBtn.className   = "delete-btn";
@@ -130,6 +171,6 @@ export async function render() {
   costsTabIncomeSumEl.textContent = monthIncome.toFixed(2);
 
   const budget = monthIncome - monthTotal;
-  budgetSumEl.textContent  = budget.toFixed(2) + " zł";
-  budgetSumEl.style.color  = budget >= 0 ? "#76ffb0" : "#ff8eb7";
+  budgetSumEl.textContent = budget.toFixed(2) + " zł";
+  budgetSumEl.style.color = budget >= 0 ? "#76ffb0" : "#ff8eb7";
 }

@@ -3,12 +3,43 @@ import { state } from "./state.js";
 import { getTodayDate } from "./ui.js";
 
 // --- DOM refs ---
-const incomeDateInput  = document.getElementById("incomeDate");
-const incomeNameInput  = document.getElementById("incomeName");
+const incomeDateInput   = document.getElementById("incomeDate");
+const incomeNameInput   = document.getElementById("incomeName");
 const incomeAmountInput = document.getElementById("incomeAmount");
-const incomeList       = document.getElementById("incomeList");
-const incomeSumEl      = document.getElementById("incomeSum");
-const incomeMonthSumEl = document.getElementById("incomeMonthSum");
+const incomeKindSelect  = document.getElementById("incomeKind");
+const incomeList        = document.getElementById("incomeList");
+const incomeSumEl       = document.getElementById("incomeSum");
+const incomeMonthSumEl  = document.getElementById("incomeMonthSum");
+
+// --- Kind dictionary ---
+export let kindIncomeMap = {};
+
+export async function loadKindIncome() {
+  if (!state.currentUser) return;
+
+  const savedValue = incomeKindSelect.value;
+
+  const { data, error } = await supabaseClient
+    .from("kind_income")
+    .select("id, name")
+    .eq("user_id", state.currentUser.id)
+    .order("name");
+
+  if (error) { alert(error.message); return; }
+
+  kindIncomeMap = {};
+  incomeKindSelect.innerHTML = '<option value="">— Wybierz rodzaj —</option>';
+
+  (data || []).forEach(k => {
+    kindIncomeMap[k.id] = k.name;
+    const opt = document.createElement("option");
+    opt.value       = k.id;
+    opt.textContent = k.name;
+    incomeKindSelect.appendChild(opt);
+  });
+
+  incomeKindSelect.value = savedValue;
+}
 
 // --- Helpers ---
 export function getSelectedIncomeDate() {
@@ -56,8 +87,9 @@ export async function calculateMonthIncomeSum(dateStr) {
 export async function addIncome() {
   if (!state.currentUser) { alert("Najpierw się zaloguj."); return; }
 
-  const name   = incomeNameInput.value.trim();
-  const amount = parseFloat(incomeAmountInput.value);
+  const name    = incomeNameInput.value.trim();
+  const amount  = parseFloat(incomeAmountInput.value);
+  const kind_id = incomeKindSelect.value || null;
 
   if (!name || isNaN(amount) || amount <= 0) {
     alert("Wpisz poprawną nazwę i kwotę większą od 0.");
@@ -68,13 +100,15 @@ export async function addIncome() {
     user_id:     state.currentUser.id,
     income_date: getSelectedIncomeDate(),
     name,
-    amount
+    amount,
+    kind_id
   }]);
 
   if (error) { alert(error.message); return; }
 
   incomeNameInput.value   = "";
   incomeAmountInput.value = "";
+  incomeKindSelect.value  = "";
   await renderIncome();
 }
 
@@ -105,6 +139,13 @@ export async function renderIncome() {
 
     textWrapper.appendChild(nameSpan);
     textWrapper.appendChild(amountSpan);
+
+    if (income.kind_id && kindIncomeMap[income.kind_id]) {
+      const badge = document.createElement("span");
+      badge.className   = "kind-badge kind-badge-income";
+      badge.textContent = kindIncomeMap[income.kind_id];
+      textWrapper.appendChild(badge);
+    }
 
     const deleteBtn = document.createElement("button");
     deleteBtn.textContent = "Usuń";

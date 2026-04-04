@@ -74,10 +74,40 @@
         </div>
       </div>
 
+      <div id="settingsSection" style="display:none;">
+        <div class="settings-header">
+          <button type="button" id="closeSettingsBtn" class="secondary-btn">← Wróć</button>
+          <h2>Ustawienia</h2>
+        </div>
+        <div class="settings-grid">
+          <div class="settings-card">
+            <h3 class="settings-card-title">Rodzaje kosztów</h3>
+            <ul id="kindCostList" class="kind-list"></ul>
+            <div class="kind-add">
+              <input id="kindCostInput" placeholder="Np. Jedzenie, Transport..." />
+              <button class="add-btn" id="addKindCostBtn">Dodaj</button>
+            </div>
+          </div>
+          <div class="settings-card">
+            <h3 class="settings-card-title">Rodzaje przychodów</h3>
+            <ul id="kindIncomeList" class="kind-list"></ul>
+            <div class="kind-add">
+              <input id="kindIncomeInput" placeholder="Np. Wynagrodzenie, Premia..." />
+              <button class="add-btn" id="addKindIncomeBtn">Dodaj</button>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div id="appSection" style="display: none;">
         <div class="top-bar">
           <span id="userInfo" class="user-info"></span>
-          <button type="button" id="logoutBtn" class="secondary-btn">Wyloguj</button>
+          <div class="top-bar-actions">
+            <button type="button" id="settingsBtn" class="icon-btn" title="Ustawienia">
+              <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+            </button>
+            <button type="button" id="logoutBtn" class="secondary-btn">Wyloguj</button>
+          </div>
         </div>
 
         <div class="tabs">
@@ -101,6 +131,13 @@
             <div class="input-group">
               <label for="amount">Kwota</label>
               <input id="amount" placeholder="Np. 49.99" type="number" step="0.01" />
+            </div>
+
+            <div class="input-group">
+              <label for="expenseKind">Rodzaj</label>
+              <select id="expenseKind">
+                <option value="">— Wybierz rodzaj —</option>
+              </select>
             </div>
 
             <button class="add-btn" id="addExpenseBtn">Dodaj wydatek</button>
@@ -150,6 +187,13 @@
             <div class="input-group">
               <label for="incomeAmount">Kwota</label>
               <input id="incomeAmount" placeholder="Np. 4999.99" type="number" step="0.01" />
+            </div>
+
+            <div class="input-group">
+              <label for="incomeKind">Rodzaj</label>
+              <select id="incomeKind">
+                <option value="">— Wybierz rodzaj —</option>
+              </select>
             </div>
 
             <button class="add-btn" id="addIncomeBtn">Dodaj przychód</button>
