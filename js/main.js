@@ -77,11 +77,15 @@ async function initApp(user) {
 expenseDateInput.value = getTodayDate();
 incomeDateInput.value  = getTodayDate();
 
-const { data: { session: initialSession } } = await supabaseClient.auth.getSession();
-if (initialSession) {
-  await initApp(initialSession.user);
+if (window.location.hash.includes("type=recovery")) {
+  showResetSection();
 } else {
-  showAuthSection();
+  const { data: { session: initialSession } } = await supabaseClient.auth.getSession();
+  if (initialSession) {
+    await initApp(initialSession.user);
+  } else {
+    showAuthSection();
+  }
 }
 
 // React to subsequent auth changes (login, logout, token refresh)
