@@ -61,25 +61,42 @@ document.getElementById("closeSettingsBtn").addEventListener("click", () => {
 document.getElementById("addKindCostBtn").addEventListener("click", addKindCost);
 document.getElementById("addKindIncomeBtn").addEventListener("click", addKindIncome);
 
-// --- Initialisation ---
+// --- App initialisation ---
+async function initApp(user) {
+  state.currentUser = user;
+  expenseDateInput.value = expenseDateInput.value || getTodayDate();
+  incomeDateInput.value  = incomeDateInput.value  || getTodayDate();
+  showAppSection(user);
+  switchTab("costs");
+  await Promise.all([loadKindCost(), loadKindIncome()]);
+  await render();
+  await renderIncome();
+}
+
+// On page load — read session directly from localStorage (reliable, no timing issues)
 expenseDateInput.value = getTodayDate();
 incomeDateInput.value  = getTodayDate();
 
+const { data: { session: initialSession } } = await supabaseClient.auth.getSession();
+if (initialSession) {
+  await initApp(initialSession.user);
+} else {
+  showAuthSection();
+}
+
+// React to subsequent auth changes (login, logout, token refresh)
 supabaseClient.auth.onAuthStateChange(async (event, session) => {
   if (event === "PASSWORD_RECOVERY") {
     showResetSection();
     return;
   }
 
-  state.currentUser = session?.user ?? null;
-
-  if (state.currentUser) {
-    showAppSection(state.currentUser);
-    switchTab("costs");
-    await Promise.all([loadKindCost(), loadKindIncome()]);
-    await render();
-    await renderIncome();
-  } else {
+  if (event === "SIGNED_IN") {
+    await initApp(session.user);
+  } else if (event === "SIGNED_OUT") {
+    state.currentUser = null;
     showAuthSection();
+  } else if (event === "TOKEN_REFRESHED") {
+    state.currentUser = session.user;
   }
 });
