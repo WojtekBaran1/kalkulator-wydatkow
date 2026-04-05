@@ -94,8 +94,8 @@ export async function addExpense() {
   const amount  = parseFloat(expenseAmountInput.value);
   const kind_id = expenseKindSelect.value || null;
 
-  if (!name || isNaN(amount) || amount <= 0) {
-    alert("Wpisz poprawną nazwę i kwotę większą od 0.");
+  if (!name || isNaN(amount) || amount === 0) {
+    alert("Wpisz poprawną nazwę i kwotę różną od 0.");
     return;
   }
 

@@ -91,8 +91,8 @@ export async function addIncome() {
   const amount  = parseFloat(incomeAmountInput.value);
   const kind_id = incomeKindSelect.value || null;
 
-  if (!name || isNaN(amount) || amount <= 0) {
-    alert("Wpisz poprawną nazwę i kwotę większą od 0.");
+  if (!name || isNaN(amount) || amount === 0) {
+    alert("Wpisz poprawną nazwę i kwotę różną od 0.");
     return;
   }
 
