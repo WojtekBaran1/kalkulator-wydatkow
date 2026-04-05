@@ -644,6 +644,98 @@ select option {
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.22);
 }
 
+.kind-month-row {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.week-range-label {
+  font-size: 12px;
+  color: #8ea0d1;
+  letter-spacing: 0.5px;
+}
+
+.kind-month-input {
+  padding: 6px 12px;
+  border-radius: 10px;
+  border: 1px solid rgba(93, 173, 255, 0.25);
+  background: rgba(255, 255, 255, 0.05);
+  color: #b8c4e8;
+  font-size: 14px;
+  outline: none;
+  cursor: pointer;
+}
+
+.kind-month-input:focus {
+  border-color: rgba(93, 173, 255, 0.55);
+}
+
+.kind-summary-list {
+  list-style: none;
+  margin: 0 0 16px;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.kind-summary-row {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.kind-summary-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.kind-summary-name {
+  font-size: 13px;
+  color: #b8c4e8;
+}
+
+.kind-summary-amount {
+  font-size: 13px;
+  font-weight: bold;
+  color: rgba(255, 142, 183, 1);
+}
+
+.kind-summary-bar-wrap {
+  height: 5px;
+  border-radius: 4px;
+  background: rgba(255, 255, 255, 0.07);
+  overflow: hidden;
+}
+
+.kind-summary-bar {
+  height: 100%;
+  border-radius: 4px;
+  background: rgba(255, 142, 183, 0.7);
+  transition: width 0.3s ease;
+}
+
+.kind-summary-empty {
+  font-size: 13px;
+  color: #8ea0d1;
+  text-align: center;
+  padding: 12px 0;
+}
+
+.kind-summary-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  font-size: 14px;
+  font-weight: bold;
+  color: #b8c4e8;
+}
+
 .chart-title {
   margin: 0 0 16px;
   font-size: 15px;

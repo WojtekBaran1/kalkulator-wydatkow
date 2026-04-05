@@ -50,9 +50,11 @@ export function getSelectedDate() {
 }
 
 function monthRange(dateStr) {
-  const d     = new Date(dateStr);
-  const start = new Date(d.getFullYear(), d.getMonth(), 1).toISOString().split("T")[0];
-  const end   = new Date(d.getFullYear(), d.getMonth() + 1, 1).toISOString().split("T")[0];
+  const [year, month] = dateStr.split("-").map(Number);
+  const start    = `${year}-${String(month).padStart(2, "0")}-01`;
+  const endYear  = month === 12 ? year + 1 : year;
+  const endMonth = month === 12 ? 1 : month + 1;
+  const end      = `${endYear}-${String(endMonth).padStart(2, "0")}-01`;
   return { start, end };
 }
 

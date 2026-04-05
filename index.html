@@ -219,6 +219,29 @@
 
         <div id="reportsTab" class="tab-content">
           <div class="chart-card">
+            <h3 class="chart-title">Wydatki według rodzaju — miesiąc</h3>
+            <div class="kind-month-row">
+              <input type="month" id="kindMonthPicker" class="kind-month-input" />
+            </div>
+            <ul id="kindSummaryList" class="kind-summary-list"></ul>
+            <div class="kind-summary-total">
+              <span>Łącznie</span>
+              <span id="kindSummaryTotal">0.00 zł</span>
+            </div>
+          </div>
+          <div class="chart-card">
+            <h3 class="chart-title">Wydatki według rodzaju — tydzień</h3>
+            <div class="kind-month-row">
+              <input type="week" id="kindWeekPicker" class="kind-month-input" />
+              <span id="weekRangeLabel" class="week-range-label"></span>
+            </div>
+            <ul id="weekKindSummaryList" class="kind-summary-list"></ul>
+            <div class="kind-summary-total">
+              <span>Łącznie</span>
+              <span id="weekKindSummaryTotal">0.00 zł</span>
+            </div>
+          </div>
+          <div class="chart-card">
             <h3 class="chart-title">Przychody miesięczne</h3>
             <div class="chart-wrap">
               <canvas id="chartIncomes"></canvas>
