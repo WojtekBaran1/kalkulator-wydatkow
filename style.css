@@ -517,6 +517,7 @@ select option {
 
 .kind-item {
   display: flex;
+  flex-wrap: wrap;
   justify-content: space-between;
   align-items: center;
   padding: 10px 14px;
@@ -525,6 +526,7 @@ select option {
   border: 1px solid rgba(129, 154, 255, 0.14);
   font-size: 14px;
   color: #eef3ff;
+  gap: 6px;
 }
 
 .kind-empty {
@@ -532,6 +534,61 @@ select option {
   font-style: italic;
   justify-content: center;
   border-style: dashed;
+}
+
+.kind-item-name {
+  flex: 1;
+}
+
+.kind-btn-group {
+  display: flex;
+  gap: 6px;
+  flex-shrink: 0;
+}
+
+.edit-btn {
+  padding: 6px 12px;
+  border-radius: 8px;
+  border: 1px solid rgba(93, 173, 255, 0.35);
+  background: rgba(93, 173, 255, 0.1);
+  color: #9feaff;
+  font-size: 12px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.edit-btn:hover {
+  background: rgba(93, 173, 255, 0.2);
+}
+
+.kind-edit-input {
+  flex: 1;
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid rgba(93, 173, 255, 0.4);
+  background: rgba(255, 255, 255, 0.06);
+  color: #eef3ff;
+  font-size: 14px;
+  outline: none;
+  margin-right: 8px;
+}
+
+.kind-save-btn,
+.kind-cancel-btn {
+  padding: 6px 12px;
+  font-size: 12px;
+}
+
+.kind-notification {
+  display: block;
+  width: 100%;
+  margin-top: 6px;
+  padding: 6px 10px;
+  border-radius: 8px;
+  background: rgba(255, 142, 183, 0.12);
+  border: 1px solid rgba(255, 142, 183, 0.3);
+  color: #ff8eb7;
+  font-size: 12px;
 }
 
 .kind-add {
