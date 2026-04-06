@@ -35,13 +35,14 @@ function weekRangeFromStr(weekStr) {
 }
 
 function currentWeekValue() {
-  const now    = new Date();
-  const jan4   = new Date(now.getFullYear(), 0, 4);
+  const now     = new Date();
+  const jan4    = new Date(now.getFullYear(), 0, 4);
   const jan4Dow = jan4.getDay() || 7;
   const week1Mon = new Date(now.getFullYear(), 0, 4 - (jan4Dow - 1));
-  const nowDate  = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const diff     = nowDate - week1Mon;
-  const week     = Math.floor(diff / (7 * 86400000)) + 1;
+  // Use UTC to avoid DST offset skewing the day count
+  const utcNow  = Date.UTC(now.getFullYear(), now.getMonth(), now.getDate());
+  const utcMon  = Date.UTC(week1Mon.getFullYear(), week1Mon.getMonth(), week1Mon.getDate());
+  const week    = Math.floor((utcNow - utcMon) / (7 * 86400000)) + 1;
   return `${now.getFullYear()}-W${String(week).padStart(2, "0")}`;
 }
 
@@ -126,6 +127,89 @@ async function loadWeeklyKindSummary(weekStr) {
   renderKindRows("weekKindSummaryList", "weekKindSummaryTotal", expRes.data || [], kindNames, "Brak wydatków w tym tygodniu.");
 }
 
+// --- Weekly day summary ---
+// Polish short day names, starting from Monday (index 0)
+const DAY_NAMES = ["Pon", "Wt", "Śr", "Czw", "Pt", "Sob", "Nd"];
+
+async function loadWeeklyDaySummary(weekStr) {
+  if (!state.currentUser) return;
+
+  // 1. Calculate the date range for the selected week
+  const { start, end, sundayStr } = weekRangeFromStr(weekStr);
+
+  // 2. Update the date label next to the picker (e.g. "07.04 – 13.04")
+  const fmtDate = s => s.split("-").reverse().join(".");
+  document.getElementById("dayWeekRangeLabel").textContent =
+    `${fmtDate(start)} – ${fmtDate(sundayStr)}`;
+
+  // 3. Fetch ALL expenses for the whole week in a single database query
+  const { data } = await supabaseClient
+    .from("expenses")
+    .select("expense_date, amount")
+    .eq("user_id", state.currentUser.id)
+    .gte("expense_date", start)
+    .lt("expense_date", end);
+
+  // 4. Group expenses by date using a plain object as a dictionary
+  //    e.g. { "2026-04-07": 120.50, "2026-04-09": 45.00 }
+  const byDate = {};
+  (data || []).forEach(e => {
+    byDate[e.expense_date] = (byDate[e.expense_date] || 0) + Number(e.amount);
+  });
+
+  // 5. Build two arrays: labels (day names) and amounts (totals)
+  //    We loop 7 times, once per day starting from Monday
+  const labels  = [];
+  const amounts = [];
+  const [y, m, d] = start.split("-").map(Number);
+
+  for (let i = 0; i < 7; i++) {
+    // Create the date for Monday + i days using local calendar (no DST issues)
+    const date    = new Date(y, m - 1, d + i);
+    const dateStr = localDateStr(date);           // e.g. "2026-04-07"
+    const dayNum  = date.getDate().toString().padStart(2, "0");
+    const monNum  = String(date.getMonth() + 1).padStart(2, "0");
+
+    labels.push(`${DAY_NAMES[i]} ${dayNum}.${monNum}`); // e.g. "Pon 07.04"
+    amounts.push(byDate[dateStr] || 0);           // 0 if no expenses that day
+  }
+
+  // 6. Draw the bar chart
+  renderDayChart(labels, amounts);
+}
+
+function renderDayChart(labels, amounts) {
+  // Destroy old chart instance if it exists (prevents memory leaks on re-render)
+  if (chartInstances.chartWeekDays) chartInstances.chartWeekDays.destroy();
+
+  const canvas = document.getElementById("chartWeekDays");
+  const ctx    = canvas.getContext("2d");
+
+  // Color each bar: pink if has expenses, subtle grey if zero
+  const colors = amounts.map(v =>
+    v > 0 ? "rgba(255, 142, 183, 0.6)" : "rgba(255,255,255,0.07)"
+  );
+  const borders = amounts.map(v =>
+    v > 0 ? "rgba(255, 142, 183, 1)" : "rgba(255,255,255,0.15)"
+  );
+
+  chartInstances.chartWeekDays = new Chart(ctx, {
+    type: "bar",
+    data: {
+      labels,
+      datasets: [{
+        data:             amounts,
+        backgroundColor:  colors,
+        borderColor:      borders,
+        borderWidth:      2,
+        borderRadius:     8,
+        borderSkipped:    false,
+      }]
+    },
+    options: barOptions()
+  });
+}
+
 // --- Data fetching ---
 export async function loadReportsData() {
   if (!state.currentUser) return;
@@ -175,9 +259,17 @@ export async function loadReportsData() {
     weekPicker.addEventListener("change", () => loadWeeklyKindSummary(weekPicker.value));
   }
 
+  // Init day-by-day week picker
+  const dayWeekPicker = document.getElementById("dayWeekPicker");
+  if (!dayWeekPicker.value) {
+    dayWeekPicker.value = currentWeekValue();
+    dayWeekPicker.addEventListener("change", () => loadWeeklyDaySummary(dayWeekPicker.value));
+  }
+
   await Promise.all([
     loadKindSummary(monthPicker.value),
-    loadWeeklyKindSummary(weekPicker.value)
+    loadWeeklyKindSummary(weekPicker.value),
+    loadWeeklyDaySummary(dayWeekPicker.value)
   ]);
 }
 
