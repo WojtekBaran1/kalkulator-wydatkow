@@ -219,8 +219,14 @@
         </div>
 
         <div id="reportsTab" class="tab-content">
-          <div class="chart-card">
-            <h3 class="chart-title">Wydatki według rodzaju — miesiąc</h3>
+          <div class="chart-card" data-card-id="monthKind">
+            <div class="card-header">
+              <h3 class="chart-title">Wydatki według rodzaju — miesiąc</h3>
+              <div class="card-order-btns">
+                <button class="order-btn" data-dir="up">▲</button>
+                <button class="order-btn" data-dir="down">▼</button>
+              </div>
+            </div>
             <div class="kind-month-row">
               <input type="month" id="kindMonthPicker" class="kind-month-input" />
             </div>
@@ -230,8 +236,14 @@
               <span id="kindSummaryTotal">0.00 zł</span>
             </div>
           </div>
-          <div class="chart-card">
-            <h3 class="chart-title">Wydatki według rodzaju — tydzień</h3>
+          <div class="chart-card" data-card-id="weekKind">
+            <div class="card-header">
+              <h3 class="chart-title">Wydatki według rodzaju — tydzień</h3>
+              <div class="card-order-btns">
+                <button class="order-btn" data-dir="up">▲</button>
+                <button class="order-btn" data-dir="down">▼</button>
+              </div>
+            </div>
             <div class="kind-month-row">
               <input type="week" id="kindWeekPicker" class="kind-month-input" />
               <span id="weekRangeLabel" class="week-range-label"></span>
@@ -242,8 +254,14 @@
               <span id="weekKindSummaryTotal">0.00 zł</span>
             </div>
           </div>
-          <div class="chart-card">
-            <h3 class="chart-title">Wydatki dziennie — tydzień</h3>
+          <div class="chart-card" data-card-id="weekDays">
+            <div class="card-header">
+              <h3 class="chart-title">Wydatki dziennie — tydzień</h3>
+              <div class="card-order-btns">
+                <button class="order-btn" data-dir="up">▲</button>
+                <button class="order-btn" data-dir="down">▼</button>
+              </div>
+            </div>
             <div class="kind-month-row">
               <input type="week" id="dayWeekPicker" class="kind-month-input" />
               <span id="dayWeekRangeLabel" class="week-range-label"></span>
@@ -252,20 +270,38 @@
               <canvas id="chartWeekDays"></canvas>
             </div>
           </div>
-          <div class="chart-card">
-            <h3 class="chart-title">Przychody miesięczne</h3>
+          <div class="chart-card" data-card-id="monthIncome">
+            <div class="card-header">
+              <h3 class="chart-title">Przychody miesięczne</h3>
+              <div class="card-order-btns">
+                <button class="order-btn" data-dir="up">▲</button>
+                <button class="order-btn" data-dir="down">▼</button>
+              </div>
+            </div>
             <div class="chart-wrap">
               <canvas id="chartIncomes"></canvas>
             </div>
           </div>
-          <div class="chart-card">
-            <h3 class="chart-title">Koszty miesięczne</h3>
+          <div class="chart-card" data-card-id="monthCosts">
+            <div class="card-header">
+              <h3 class="chart-title">Koszty miesięczne</h3>
+              <div class="card-order-btns">
+                <button class="order-btn" data-dir="up">▲</button>
+                <button class="order-btn" data-dir="down">▼</button>
+              </div>
+            </div>
             <div class="chart-wrap">
               <canvas id="chartCosts"></canvas>
             </div>
           </div>
-          <div class="chart-card">
-            <h3 class="chart-title">Oszczędności miesięczne</h3>
+          <div class="chart-card" data-card-id="monthSavings">
+            <div class="card-header">
+              <h3 class="chart-title">Oszczędności miesięczne</h3>
+              <div class="card-order-btns">
+                <button class="order-btn" data-dir="up">▲</button>
+                <button class="order-btn" data-dir="down">▼</button>
+              </div>
+            </div>
             <div class="chart-wrap">
               <canvas id="chartSavings"></canvas>
             </div>

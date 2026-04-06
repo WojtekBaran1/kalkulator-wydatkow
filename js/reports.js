@@ -3,6 +3,73 @@ import { state } from "./state.js";
 
 const chartInstances = {};
 
+// Default card order — used when user has no saved preference yet
+const DEFAULT_ORDER = ["monthKind", "weekKind", "weekDays", "monthIncome", "monthCosts", "monthSavings"];
+
+// --- Card order: save & load ---
+async function saveCardOrder(order) {
+  // We use "upsert" — insert a new row OR update it if the user already has one
+  await supabaseClient.from("user_preferences").upsert({
+    user_id:      state.currentUser.id,
+    report_order: JSON.stringify(order)   // store the array as a JSON string in the DB
+  }, { onConflict: "user_id" });
+}
+
+async function loadCardOrder() {
+  const { data } = await supabaseClient
+    .from("user_preferences")
+    .select("report_order")
+    .eq("user_id", state.currentUser.id)
+    .single();                            // expect at most one row
+
+  // If user has a saved order, parse it; otherwise use the default
+  return data?.report_order ? JSON.parse(data.report_order) : DEFAULT_ORDER;
+}
+
+function applyCardOrder(order) {
+  const tab = document.getElementById("reportsTab");
+
+  // Re-arrange the cards in the DOM to match the saved order
+  order.forEach(cardId => {
+    const card = tab.querySelector(`[data-card-id="${cardId}"]`);
+    if (card) tab.appendChild(card);   // appendChild moves an existing element to the end
+  });
+
+  // Update ▲▼ button visibility: hide ▲ on first card, hide ▼ on last card
+  const cards = tab.querySelectorAll(".chart-card");
+  cards.forEach((card, i) => {
+    card.querySelector("[data-dir='up']").style.visibility   = i === 0                ? "hidden" : "visible";
+    card.querySelector("[data-dir='down']").style.visibility = i === cards.length - 1 ? "hidden" : "visible";
+  });
+}
+
+function initCardOrderButtons() {
+  const tab = document.getElementById("reportsTab");
+
+  tab.querySelectorAll(".order-btn").forEach(btn => {
+    btn.addEventListener("click", async () => {
+      const card     = btn.closest(".chart-card");
+      const allCards = [...tab.querySelectorAll(".chart-card")];
+      const index    = allCards.indexOf(card);
+      const dir      = btn.dataset.dir;
+
+      // Swap the card with its neighbour
+      if (dir === "up" && index > 0) {
+        tab.insertBefore(card, allCards[index - 1]);   // move card before the one above it
+      } else if (dir === "down" && index < allCards.length - 1) {
+        tab.insertBefore(allCards[index + 1], card);   // move the card below above current
+      }
+
+      // Read the new order from the DOM and save it
+      const newOrder = [...tab.querySelectorAll(".chart-card")]
+        .map(c => c.dataset.cardId);
+
+      applyCardOrder(newOrder);   // refresh button visibility
+      await saveCardOrder(newOrder);
+    });
+  });
+}
+
 // --- Helpers ---
 function localDateStr(d) {
   const y   = d.getFullYear();
@@ -244,6 +311,14 @@ export async function loadReportsData() {
   const savingsData = incomesData.map((inc, i) => inc - costsData[i]);
 
   renderCharts(labels, costsData, incomesData, savingsData);
+
+  // Init card order — load saved order and wire up buttons (buttons only once)
+  const order = await loadCardOrder();
+  applyCardOrder(order);
+  if (!document.getElementById("reportsTab").dataset.orderReady) {
+    initCardOrderButtons();
+    document.getElementById("reportsTab").dataset.orderReady = "1";
+  }
 
   // Init month picker
   const monthPicker = document.getElementById("kindMonthPicker");
