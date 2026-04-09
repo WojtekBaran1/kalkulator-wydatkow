@@ -201,15 +201,12 @@ const DAY_NAMES = ["Pon", "Wt", "Śr", "Czw", "Pt", "Sob", "Nd"];
 async function loadWeeklyDaySummary(weekStr) {
   if (!state.currentUser) return;
 
-  // 1. Calculate the date range for the selected week
   const { start, end, sundayStr } = weekRangeFromStr(weekStr);
 
-  // 2. Update the date label next to the picker (e.g. "07.04 – 13.04")
   const fmtDate = s => s.split("-").reverse().join(".");
   document.getElementById("dayWeekRangeLabel").textContent =
     `${fmtDate(start)} – ${fmtDate(sundayStr)}`;
 
-  // 3. Fetch ALL expenses for the whole week in a single database query
   const { data } = await supabaseClient
     .from("expenses")
     .select("expense_date, amount")
@@ -217,64 +214,43 @@ async function loadWeeklyDaySummary(weekStr) {
     .gte("expense_date", start)
     .lt("expense_date", end);
 
-  // 4. Group expenses by date using a plain object as a dictionary
-  //    e.g. { "2026-04-07": 120.50, "2026-04-09": 45.00 }
-  const byDate = {};
-  (data || []).forEach(e => {
-    byDate[e.expense_date] = (byDate[e.expense_date] || 0) + Number(e.amount);
-  });
-
-  // 5. Build two arrays: labels (day names) and amounts (totals)
-  //    We loop 7 times, once per day starting from Monday
-  const labels  = [];
-  const amounts = [];
   const [y, m, d] = start.split("-").map(Number);
-
+  const days = [];
   for (let i = 0; i < 7; i++) {
-    // Create the date for Monday + i days using local calendar (no DST issues)
     const date    = new Date(y, m - 1, d + i);
-    const dateStr = localDateStr(date);           // e.g. "2026-04-07"
+    const dateStr = localDateStr(date);
     const dayNum  = date.getDate().toString().padStart(2, "0");
     const monNum  = String(date.getMonth() + 1).padStart(2, "0");
-
-    labels.push(`${DAY_NAMES[i]} ${dayNum}.${monNum}`); // e.g. "Pon 07.04"
-    amounts.push(byDate[dateStr] || 0);           // 0 if no expenses that day
+    days.push({ label: `${DAY_NAMES[i]} ${dayNum}.${monNum}`, dateStr, total: 0 });
   }
 
-  // 6. Draw the bar chart
-  renderDayChart(labels, amounts);
+  let grandTotal = 0;
+  (data || []).forEach(e => {
+    const day = days.find(d => d.dateStr === e.expense_date);
+    if (!day) return;
+    day.total += Number(e.amount);
+    grandTotal += Number(e.amount);
+  });
+
+  renderWeekDayList(days, grandTotal);
 }
 
-function renderDayChart(labels, amounts) {
-  // Destroy old chart instance if it exists (prevents memory leaks on re-render)
-  if (chartInstances.chartWeekDays) chartInstances.chartWeekDays.destroy();
+function renderWeekDayList(days, grandTotal) {
+  const list = document.getElementById("weekDayKindList");
+  list.innerHTML = "";
 
-  const canvas = document.getElementById("chartWeekDays");
-  const ctx    = canvas.getContext("2d");
-
-  // Color each bar: pink if has expenses, subtle grey if zero
-  const colors = amounts.map(v =>
-    v > 0 ? "rgba(255, 142, 183, 0.6)" : "rgba(255,255,255,0.07)"
-  );
-  const borders = amounts.map(v =>
-    v > 0 ? "rgba(255, 142, 183, 1)" : "rgba(255,255,255,0.15)"
-  );
-
-  chartInstances.chartWeekDays = new Chart(ctx, {
-    type: "bar",
-    data: {
-      labels,
-      datasets: [{
-        data:             amounts,
-        backgroundColor:  colors,
-        borderColor:      borders,
-        borderWidth:      2,
-        borderRadius:     8,
-        borderSkipped:    false,
-      }]
-    },
-    options: barOptions()
+  days.forEach(({ label, total }) => {
+    const li = document.createElement("li");
+    li.className = "day-week-item";
+    li.innerHTML = `
+      <div class="day-week-header">
+        <span class="day-week-name">${label}</span>
+        <span class="day-week-total">${total > 0 ? total.toFixed(2) + " zł" : "—"}</span>
+      </div>`;
+    list.appendChild(li);
   });
+
+  document.getElementById("weekDayKindTotal").textContent = `${grandTotal.toFixed(2)} zł`;
 }
 
 // --- Data fetching ---
