@@ -88,7 +88,17 @@ if (window.location.hash.includes("type=recovery")) {
   }
 }
 
-// React to subsequent auth changes (login, logout, token refresh)
+document.addEventListener("visibilitychange", async () => {
+  if (document.visibilityState !== "visible") return;
+  const { data: { session } } = await supabaseClient.auth.getSession();
+  if (session) {
+    state.currentUser = session.user;
+  } else if (state.currentUser) {
+    state.currentUser = null;
+    showAuthSection();
+  }
+});
+
 supabaseClient.auth.onAuthStateChange(async (event, session) => {
   if (event === "PASSWORD_RECOVERY") {
     showResetSection();
@@ -96,7 +106,11 @@ supabaseClient.auth.onAuthStateChange(async (event, session) => {
   }
 
   if (event === "SIGNED_IN") {
-    await initApp(session.user);
+    if (!state.currentUser) {
+      await initApp(session.user);
+    } else {
+      state.currentUser = session.user;
+    }
   } else if (event === "SIGNED_OUT") {
     state.currentUser = null;
     showAuthSection();
